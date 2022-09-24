@@ -1,14 +1,17 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Widget;
 using AndroidX.AppCompat.App;
+using System.Collections.Generic;
 
 namespace Phoneword
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
+        static readonly List<string> phoneNumbers = new List<string>();
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -20,6 +23,7 @@ namespace Phoneword
             var phoneNumberText = FindViewById<EditText>(Resource.Id.PhoneNumberText);
             var translatedPhoneWord = FindViewById<TextView>(Resource.Id.TranslatedPhoneword);
             var translateButton = FindViewById<Button>(Resource.Id.TranslateButton);
+            var translationHistoryButton = FindViewById<Button>(Resource.Id.TranslationHistoryButton);
 
             // Add code to translate number
             if (translateButton != null)
@@ -36,8 +40,18 @@ namespace Phoneword
                         else
                         {
                             if (translatedPhoneWord != null) translatedPhoneWord.Text = translatedNumber;
+                            phoneNumbers.Add(translatedNumber);
+                            if (translationHistoryButton != null) translationHistoryButton.Enabled = true;
                         }
                     }
+                };
+
+            if (translationHistoryButton != null)
+                translationHistoryButton.Click += (sender, e) =>
+                {
+                    var intent = new Intent(this, typeof(TranslationHistoryActivity));
+                    intent.PutStringArrayListExtra("phone_numbers", phoneNumbers);
+                    StartActivity(intent);
                 };
         }
 
